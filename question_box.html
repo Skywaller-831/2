@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>匿名提问箱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        :root {
+            --bg-color: #fff;
+            --text-color: #333;
+            --card-bg: #fff;
+            --search-border: #e9ecef;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --primary-color: #409eff;
+            --hover-bg: #f8f9fa;
+            --footer-color: #666;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #e4e4e7;
+            --card-bg: #262626;
+            --search-border: #404040;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --primary-color: #66b1ff;
+            --hover-bg: #2a2a2a;
+            --footer-color: #a1a1aa;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .subtitle {
+            color: var(--footer-color);
+            font-size: 1rem;
+        }
+
+        .question-container {
+            background: var(--card-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 20px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--search-border);
+            border-radius: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            resize: vertical;
+            min-height: 150px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #66b1ff;
+        }
+
+        .questions-list {
+            max-width: 600px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .question-item {
+            background: var(--card-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .question-text {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .question-time {
+            color: var(--footer-color);
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--search-border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: var(--hover-bg);
+            color: var(--primary-color);
+            transform: translateX(-2px);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 2rem;
+            color: var(--footer-color);
+            font-size: 0.9rem;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button" title="返回首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </a>
+
+    <header>
+        <h1>匿名提问箱</h1>
+        <p class="subtitle">留下你的问题，我会尽快回复</p>
+    </header>
+
+    <main class="question-container">
+        <form id="questionForm">
+            <div class="form-group">
+                <label for="question">你的问题：</label>
+                <textarea id="question" name="question" placeholder="请输入你的问题..." required></textarea>
+            </div>
+            <button type="submit">提交问题</button>
+        </form>
+    </main>
+
+    <div class="questions-list" id="questionsList">
+        <!-- 问题列表将通过JavaScript动态生成 -->
+    </div>
+
+    <footer>
+        <p>匿名提问箱 | 版权所有 © 2024</p>
+    </footer>
+
+    <script>
+        // 主题切换功能
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            html.setAttribute('data-theme', savedTheme);
+        } else {
+            // 检查系统偏好
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                html.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        // 表单提交功能
+        const questionForm = document.getElementById('questionForm');
+        const questionsList = document.getElementById('questionsList');
+
+        // 加载已保存的问题
+        function loadQuestions() {
+            // 3天的毫秒数: 3 * 24 * 60 * 60 * 1000
+            const THREE_DAYS_MS = 259200000;
+            const now = Date.now();
+
+            // 获取并过滤未过期的问题
+            let questions = JSON.parse(localStorage.getItem('questions')) || [];
+            questions = questions.filter(question => now - question.timestamp < THREE_DAYS_MS);
+
+            // 保存过滤后的问题（删除过期问题）
+            localStorage.setItem('questions', JSON.stringify(questions));
+
+            questionsList.innerHTML = '';
+
+            if (questions.length === 0) {
+                questionsList.innerHTML = '<p style="text-align: center; color: var(--footer-color); padding: 1rem;">暂无问题</p>';
+                return;
+            }
+
+            // 倒序显示问题（最新的在前面）
+            questions.reverse().forEach(question => {
+                const questionItem = document.createElement('div');
+                questionItem.className = 'question-item';
+
+                const questionText = document.createElement('p');
+                questionText.className = 'question-text';
+                questionText.textContent = question.text;
+
+                const questionTime = document.createElement('p');
+                questionTime.className = 'question-time';
+                questionTime.textContent = formatDate(question.timestamp);
+
+                questionItem.appendChild(questionText);
+                questionItem.appendChild(questionTime);
+                questionsList.appendChild(questionItem);
+            });
+        }
+
+        // 格式化日期
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // 提交问题
+        questionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const questionText = document.getElementById('question').value.trim();
+
+            if (questionText) {
+                const questions = JSON.parse(localStorage.getItem('questions')) || [];
+                questions.push({
+                    text: questionText,
+                    timestamp: Date.now()
+                });
+
+                localStorage.setItem('questions', JSON.stringify(questions));
+                document.getElementById('question').value = '';
+                loadQuestions();
+
+                // 显示提交成功提示
+                const successAlert = document.createElement('div');
+                successAlert.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #409eff; color: white; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);';
+                successAlert.textContent = '问题提交成功！';
+                document.body.appendChild(successAlert);
+
+                setTimeout(() => {
+                    successAlert.remove();
+                }, 3000);
+            }
+        });
+
+        // 页面加载时加载问题
+        window.addEventListener('DOMContentLoaded', loadQuestions);
+    </script>
+</body>
+</html>

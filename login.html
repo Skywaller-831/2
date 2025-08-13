@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 主题变量 */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --input-bg: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --footer-color: #666666;
+            --primary-color: #667eea;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --border-color: #333333;
+            --input-bg: #2d2d2d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --footer-color: #aaaaaa;
+            --primary-color: #667eea;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .back-home:hover {
+            opacity: 0.8;
+        }
+
+        .login-card {
+            background: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-title {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-checkbox {
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-label {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--footer-color);
+        }
+
+        .form-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-left: 0.5rem;
+        }
+
+        .form-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 返回主页链接 -->
+    <a href="#" class="back-home" id="resetForm">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5"></path>
+            <polyline points="12,19 5,12 12,5"></polyline>
+        </svg>
+        返回主页
+    </a>
+
+    <!-- 登录卡片 -->
+    <div class="login-card">
+        <h1 class="login-title">用户登录</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username" class="form-label">用户名</label>
+                <input type="text" id="username" class="form-input" placeholder="请输入用户名" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">密码</label>
+                <input type="password" id="password" class="form-input" placeholder="请输入密码" required>
+            </div>
+            <!-- 添加记住我复选框 -->
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="rememberMe" class="form-checkbox">
+                    <span class="checkbox-label">记住我</span>
+                </label>
+            </div>
+            <button type="submit" class="login-btn">登录</button>
+        </form>
+        <div class="form-footer">
+            <p>还没有账户？<a href="register.html" class="form-link" id="registerLink">立即注册</a></p>
+            <p><a href="#" class="form-link">忘记密码？</a></p>
+        </div>
+    </div>
+
+    <script>
+        // 添加以下代码在其他事件监听器之后
+        document.getElementById('resetForm').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').reset();
+            // 可选：清除记住我复选框
+            document.getElementById('rememberMe').checked = false;
+            // 可选：清除localStorage中的记住密码信息
+            localStorage.removeItem('savedUsername');
+            localStorage.removeItem('savedPassword');
+        });
+        // 闭合上面的事件监听器
+        
+        // 主题切换功能
+        const html = document.documentElement;
+
+        // 检查本地存储的主题设置
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            html.setAttribute('data-theme', savedTheme);
+        } else {
+            // 检查系统偏好
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                html.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+            if (!localStorage.getItem('theme')) {
+                if (e.matches) {
+                    html.setAttribute('data-theme', 'dark');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                }
+            }
+        });
+
+        // 登录表单处理
+        const loginForm = document.getElementById('loginForm');
+        const registerLink = document.getElementById('registerLink');
+    
+        // 页面加载时检查是否记住密码
+        window.addEventListener('DOMContentLoaded', function() {
+            const rememberMe = document.getElementById('rememberMe');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
+            // 从localStorage获取记住的账号信息
+            const savedUsername = localStorage.getItem('savedUsername');
+            const savedPassword = localStorage.getItem('savedPassword');
+            
+            if (savedUsername && savedPassword) {
+                usernameInput.value = savedUsername;
+                passwordInput.value = savedPassword;
+                rememberMe.checked = true;
+            }
+        });
+    
+        // 修改后的代码 - 移除了reCAPTCHA验证
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // 简单验证
+            if(username.trim() === '' || password.trim() === '') {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            // 从本地存储获取用户信息
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // 调试信息
+            console.log('登录尝试:');
+            console.log('用户名:', username);
+            console.log('密码:', password);
+            console.log('所有用户:', users);
+            
+            // 查找匹配的用户
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if(user) {
+                // 登录成功，设置登录状态
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                // 处理记住密码选项
+                if (rememberMe) {
+                    localStorage.setItem('savedUsername', username);
+                    localStorage.setItem('savedPassword', password);
+                } else {
+                    localStorage.removeItem('savedUsername');
+                    localStorage.removeItem('savedPassword');
+                }
+                
+                alert('登录成功！');
+                // 跳转到主页
+                window.location.href = 'index.html';
+            } else {
+                // 更详细的错误信息
+                const usernameExists = users.some(u => u.username === username);
+                if (usernameExists) {
+                    alert('密码错误，请重试');
+                } else {
+                    alert('用户名不存在，请先注册');
+                }
+            }
+        });
+
+        // 注册链接点击事件
+        registerLink.addEventListener('click', function(e) {
+            // 跳转到注册页面
+            window.location.href = 'register.html';
+        });
+    </script>
+</body>
+
+</html>

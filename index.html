@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户登录</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: -apple-system, B   MacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+:root {
+--bg-color: #fff;
+--text-color: #333;
+--navbar-bg: rgba(255, 255, 255, 0.9);
+--search-bg: #f8f9fa;
+--search-border: #e9ecef;
+--hover-bg: #f8f9fa;
+--card-bg: #fff;
+--shadow: rgba(0, 0, 0, 0.1);
+--hero-bg: #fff;
+--footer-color: #666;
+}
+
+[data-theme="dark"] {
+--bg-color: #1a1a1a;
+--text-color: #e4e4e7;
+--navbar-bg: rgba(26, 26, 26, 0.9);
+--search-bg: #2a2a2a;
+--search-border: #404040;
+--hover-bg: #2a2a2a;
+--card-bg: #262626;
+--shadow: rgba(0, 0, 0, 0.3);
+--hero-bg: #1a1a1a;
+--footer-color: #a1a1aa;
+}
+
+body {
+background-color: var(--bg-color);
+color: var(--text-color);
+line-height: 1.6;
+transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 导航栏样式 */
+.navbar {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0.8rem 1.5rem;
+background-color: var(--navbar-bg);
+backdrop-filter: blur(15px);
+border: 1px solid var(--search-border);
+border-radius: 25px;
+margin: 1rem auto;
+max-width: 700px;
+position: relative;
+z-index: 100;
+box-shadow: 0 2px 10px var(--shadow);
+}
+
+.navbar-center {
+display: flex;
+align-items: center;
+gap: 1.5rem;
+flex: 1;
+justify-content: center;
+}
+
+.home-icon {
+width: 20px;
+height: 20px;
+color: var(--text-color);
+cursor: pointer;
+transition: color 0.3s ease;
+opacity: 0.8;
+}
+
+.home-icon:hover {
+color: #409eff;
+opacity: 1;
+}
+
+.search-box {
+display: flex;
+align-items: center;
+background-color: var(--search-bg);
+border: 1px solid var(--search-border);
+border-radius: 20px;
+padding: 0.5rem 1rem;
+transition: all 0.3s ease;
+min-width: 200px;
+max-width: 300px;
+}
+
+.search-box:focus-within {
+border-color: rgba(64, 158, 255, 0.5);
+box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+}
+
+.search-box input {
+border: none;
+background: transparent;
+outline: none;
+padding: 0.2rem;
+flex: 1;
+font-size: 0.9rem;
+color: var(--text-color);
+}
+
+.search-box input::placeholder {
+color: var(--footer-color);
+}
+
+.navbar-right {
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+
+.avatar {
+width: 32px;
+height: 32px;
+border-radius: 50%;
+border: 2px solid rgba(255, 255, 255, 0.3);
+cursor: pointer;
+transition: border-color 0.3s ease;
+}
+
+.avatar:hover {
+border-color: #409eff;
+}
+
+.navbar-menu a,
+.dropdown-toggle {
+margin-left: 1.5rem;
+text-decoration: none;
+color: var(--text-color);
+font-size: 0.9rem;
+background: none;
+border: none;
+cursor: pointer;
+padding: 0.5rem 0.8rem;
+border-radius: 8px;
+transition: all 0.3s ease;
+}
+
+.navbar-menu a:hover,
+.dropdown-toggle:hover {
+background-color: var(--hover-bg);
+color: #409eff;
+}
+
+.dropdown {
+position: relative;
+}
+
+.dropdown-menu {
+position: absolute;
+top: 100%;
+right: 0;
+background-color: var(--bg-color);
+box-shadow: 0 4px 8px var(--shadow);
+border-radius: 8px;
+padding: 1rem;
+display: none;
+flex-direction: column;
+min-width: 120px;
+z-index: 999;
+border: 1px solid var(--search-border);
+}
+
+.dropdown:hover .dropdown-menu {
+display: flex;
+}
+
+.dropdown-menu a {
+margin: 0.5rem 0;
+color: var(--text-color);
+text-decoration: none;
+margin-left: 0;
+}
+
+.toggle-appearance {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.theme-icon {
+width: 20px;
+height: 20px;
+color: var(--footer-color);
+transition: color 0.3s ease;
+}
+
+.toggle-appearance input {
+width: 40px;
+height: 20px;
+background-color: var(--search-border);
+border-radius: 20px;
+position: relative;
+appearance: none;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+.toggle-appearance input:checked {
+background-color: #409eff;
+}
+
+.toggle-appearance input::before {
+content: '';
+position: absolute;
+top: 2px;
+left: 2px;
+width: 16px;
+height: 16px;
+background-color: #fff;
+border-radius: 50%;
+transition: left 0.3s;
+}
+
+.toggle-appearance input:checked::before {
+left: 22px;
+}
+
+/* 主内容区 */
+.hero {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 4rem 2rem;
+text-align: center;
+background: var(--hero-bg);
+min-height: 100vh;
+position: relative;
+}
+
+.profile-section {
+display: flex;
+flex-direction: column;
+align-items: center;
+margin-bottom: 3rem;
+z-index: 2;
+position: relative;
+}
+
+.profile-avatar {
+width: 120px;
+height: 120px;
+border-radius: 50%;
+border: 4px solid rgba(255, 255, 255, 0.3);
+margin-bottom: 1.5rem;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+transform: scale(1.05);
+}
+
+.hero-title {
+font-size: 2.5rem;
+font-weight: bold;
+margin-bottom: 0.5rem;
+color: var(--text-color);
+}
+
+.hero-subtitle {
+font-size: 1.1rem;
+color: var(--footer-color);
+margin-bottom: 2rem;
+font-style: italic;
+}
+
+.social-links {
+display: flex;
+gap: 1rem;
+margin-bottom: 3rem;
+z-index: 2;
+position: relative;
+}
+
+.social-link {
+width: 50px;
+height: 50px;
+border-radius: 50%;
+background: var(--card-bg);
+border: 1px solid var(--search-border);
+display: flex;
+align-items: center;
+justify-content: center;
+text-decoration: none;
+color: var(--text-color);
+transition: all 0.3s ease;
+box-shadow: 0 2px 8px var(--shadow);
+}
+
+.social-link:hover {
+background: var(--hover-bg);
+transform: translateY(-2px);
+box-shadow: 0 4px 15px var(--shadow);
+color: #409eff;
+}
+
+.social-link svg {
+width: 24px;
+height: 24px;
+}
+
+/* 内容卡片 */
+.content-card {
+background: var(--card-bg);
+border: 1px solid var(--search-border);
+border-radius: 20px;
+padding: 2rem;
+max-width: 500px;
+margin: 0 auto;
+box-shadow: 0 4px 20px var(--shadow);
+z-index: 2;
+position: relative;
+}
+
+.quote {
+font-size: 1.1rem;
+line-height: 1.6;
+color: var(--text-color);
+text-align: center;
+font-style: italic;
+margin-bottom: 1.5rem;
+}
+
+.feature-icon {
+width: 40px;
+height: 40px;
+margin-bottom: 1rem;
+}
+
+.feature-title {
+font-size: 1.2rem;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
+
+.feature-desc {
+color: var(--footer-color);
+font-size: 0.9rem;
+}
+
+/* 音乐播放器 */
+.music-player {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--search-border);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 8px 32px var(--shadow);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    min-width: 280px;
+    transition: all 0.3s ease;
+}
+
+.music-player.collapsed {
+min-width: 60px;
+padding: 0.8rem;
+}
+
+.music-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 1rem;
+}
+
+.music-info {
+flex: 1;
+margin-right: 1rem;
+}
+
+.music-title {
+font-size: 0.9rem;
+font-weight: 600;
+color: var(--text-color);
+margin-bottom: 0.2rem;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.music-artist {
+font-size: 0.8rem;
+color: var(--footer-color);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.music-toggle {
+background: none;
+border: none;
+cursor: pointer;
+color: var(--footer-color);
+padding: 0.5rem;
+border-radius: 50%;
+transition: all 0.3s ease;
+}
+
+.music-toggle:hover {
+background: var(--hover-bg);
+color: var(--text-color);
+}
+
+.music-controls {
+display: flex;
+align-items: center;
+gap: 1rem;
+margin-bottom: 1rem;
+}
+
+.music-player.collapsed .music-controls,
+.music-player.collapsed .music-info,
+.music-player.collapsed .progress-container {
+display: none;
+}
+
+.control-btn {
+background: none;
+border: none;
+cursor: pointer;
+color: var(--text-color);
+padding: 0.5rem;
+border-radius: 50%;
+transition: all 0.3s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.control-btn:hover {
+background: var(--hover-bg);
+color: #409eff;
+}
+
+.play-btn {
+background: #409eff;
+color: white;
+width: 40px;
+height: 40px;
+}
+
+.play-btn:hover {
+background: #66b1ff;
+color: white;
+}
+
+.progress-container {
+margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+width: 100%;
+height: 4px;
+background: var(--search-border);
+border-radius: 2px;
+overflow: hidden;
+cursor: pointer;
+}
+
+.progress-fill {
+height: 100%;
+background: #409eff;
+width: 0%;
+transition: width 0.1s ease;
+}
+
+.time-info {
+display: flex;
+justify-content: space-between;
+font-size: 0.7rem;
+color: var(--footer-color);
+margin-top: 0.5rem;
+}
+
+.volume-control {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.volume-slider {
+width: 60px;
+height: 4px;
+background: var(--search-border);
+border-radius: 2px;
+cursor: pointer;
+position: relative;
+}
+
+.volume-fill {
+height: 100%;
+background: #409eff;
+width: 70%;
+border-radius: 2px;
+}
+
+/* 音乐可视化效果 */
+.music-visualizer {
+display: flex;
+align-items: end;
+gap: 2px;
+height: 20px;
+margin-left: 0.5rem;
+}
+
+.bar {
+width: 3px;
+background: #409eff;
+border-radius: 1px;
+animation: visualizer 1s ease-in-out infinite alternate;
+}
+
+.bar:nth-child(1) {
+animation-delay: 0s;
+}
+
+.bar:nth-child(2) {
+animation-delay: 0.1s;
+}
+
+.bar:nth-child(3) {
+animation-delay: 0.2s;
+}
+
+.bar:nth-child(4) {
+animation-delay: 0.3s;
+}
+
+@keyframes visualizer {
+0% {
+height: 4px;
+}
+
+100% {
+height: 16px;
+}
+}
+
+.music-player.paused .bar {
+animation-play-state: paused;
+height: 4px;
+}
+
+/* 底部 */
+.footer {
+text-align: center;
+padding: 2rem;
+color: var(--footer-color);
+font-size: 0.9rem;
+}
+
+.footer-bottom {
+margin-top: 2rem;
+color: var(--footer-color);
+font-size: 0.9rem;
+}
+
+.footer-bottom a {
+color: var(--footer-color);
+text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+<!-- 导航栏 -->
+<nav class="navbar">
+<div class="navbar-center">
+<!-- 首页图标 -->
+<svg class="home-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" />
+<polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2" />
+</svg>
+
+<!-- 收藏图标 -->
+<svg class="home-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" />
+</svg>
+
+<!-- 搜索框 -->
+<div class="search-box">
+<input type="text" placeholder="搜索...">
+</div>
+
+<!-- 朋友图标 -->
+<svg class="home-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" />
+<circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+<path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" />
+<path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" />
+</svg>
+</div>
+
+<div class="navbar-right">
+<div class="toggle-appearance">
+<!-- 太阳图标 (浅色模式) -->
+<svg class="theme-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" />
+<path
+d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+stroke="currentColor" stroke-width="2" />
+</svg>
+
+<input type="checkbox" id="appearance">
+
+<!-- 月亮图标 (深色模式) -->
+<svg class="theme-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2"
+fill="currentColor" />
+</svg>
+</div>
+
+
+</div>
+</nav>
+
+<!-- 主内容区 -->
+<section class="hero">
+<!-- 个人资料区域 -->
+<div class="profile-section">
+<a href="newpage.html" title="跳转到新页面">
+<img src="logo.jpg" alt="Profile Avatar" class="profile-avatar"
+onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMikiLz4KPHN2ZyB4PSIzMCIgeT0iMzAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHN0eWxlPi5zdDB7ZmlsbDpyZ2JhKDI1NSwyNTUsMjU1LDAuOCk7fTwvc3R5bGU+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMCAyMXYtMmE0IDQgMCAwIDAtNC00SDhhNCA0IDAgMCAwLTQgNHYyIi8+CjxjaXJjbGUgY2xhc3M9InN0MCIgY3g9IjEyIiBjeT0iNyIgcj0iNCIvPgo8L3N2Zz4KPC9zdmc+'">
+<h1 class="hero-title">夏仕杰</h1>
+<p class="hero-subtitle">Non, le grand amour ne suffit pas Seul un adieu fleurira.</p>
+</div>
+
+<!-- 社交链接 -->
+<div class="social-links">
+<a href="#" class="social-link" title="QQ">
+<svg viewBox="0 0 24 24" fill="currentColor">
+<path
+d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+</svg>
+</a>
+<a href="https://www.bilibili.com" class="social-link" title="Bilibili">
+<svg viewBox="0 0 24 24" fill="currentColor">
+<path
+d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .356-.124.657-.373.906l-1.174 1.12zM6.4 15.64a.96.96 0 0 0 .96-.96V9.6a.96.96 0 0 0-1.92 0v5.08c0 .53.43.96.96.96zm4.8 0a.96.96 0 0 0 .96-.96V9.6a.96.96 0 0 0-1.92 0v5.08c0 .53.43.96.96.96z" />
+</svg>
+</a>
+<a href="#" class="social-link" title="GitHub">
+<svg viewBox="0 0 24 24" fill="currentColor">
+<path
+d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+</svg>
+</a>
+<a href="question_box.html" class="social-link" title="Mail">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+<polyline points="22,6 12,13 2,6" />
+</svg>
+</a>
+</div>
+
+<!-- 内容卡片 -->
+<div class="content-card">
+<p class="quote">
+"Non, le grand amour ne suffit pas Seul un adieu fleurira."
+</p>
+<p style="text-align: center; color: var(--footer-color); font-size: 0.9rem;">
+— 欢迎来到我的个人空间 — 
+</p>
+</div>
+</section>
+
+<!-- 音乐播放器 -->
+<div class="music-player" id="musicPlayer">
+<div class="music-header">
+<div class="music-info">
+<div class="music-title">可不可以</div>
+<div class="music-artist">Happy 2025</div>
+</div>
+<div class="music-visualizer">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+<button class="music-toggle" id="togglePlayer">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<polyline points="18,6 6,6"></polyline>
+<polyline points="18,12 6,12"></polyline>
+<polyline points="18,18 6,18"></polyline>
+</svg>
+</button>
+</div>
+
+<div class="music-controls">
+<button class="control-btn" id="prevBtn">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<polygon points="19,20 9,12 19,4"></polygon>
+<line x1="5" y1="19" x2="5" y2="5"></line>
+</svg>
+</button>
+
+<button class="control-btn play-btn" id="playBtn">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<polygon points="5,3 19,12 5,21"></polygon>
+</svg>
+</button>
+
+<button class="control-btn" id="nextBtn">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<polygon points="5,4 15,12 5,20"></polygon>
+<line x1="19" y1="5" x2="19" y2="19"></line>
+</svg>
+</button>
+
+<div class="volume-control">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<polygon points="11,5 6,9 2,9 2,15 6,15 11,19"></polygon>
+<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+</svg>
+<div class="volume-slider" id="volumeSlider">
+<div class="volume-fill" id="volumeFill"></div>
+</div>
+</div>
+</div>
+
+<div class="progress-container">
+<div class="progress-bar" id="progressBar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+<div class="time-info">
+<span id="currentTime">0:00</span>
+<span id="totalTime">0:00</span>
+</div>
+</div>
+</div>
+
+<!-- 隐藏的音频元素 -->
+<audio id="audioPlayer" preload="metadata">
+<source src="可不可以[www.33ve.com].mp3" type="audio/mpeg">
+</audio>
+
+<!-- 底部 -->
+<footer class="footer">
+<p>This Page Use WTFPL Licensed | Copyright © 2024-2025 baisiyi</p>
+<div class="footer-bottom">
+<a href="https://www.limoer.net">www.limoer.net</a> — 个人主页
+</div>
+</footer>
+
+<script>
+// 主题切换功能
+const themeToggle = document.getElementById('appearance');
+const html = document.documentElement;
+
+// 检查本地存储的主题设置
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+html.setAttribute('data-theme', savedTheme);
+themeToggle.checked = savedTheme === 'dark';
+} else {
+// 检查系统偏好
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (prefersDark) {
+html.setAttribute('data-theme', 'dark');
+themeToggle.checked = true;
+}
+}
+
+// 主题切换事件
+themeToggle.addEventListener('change', function () {
+if (this.checked) {
+html.setAttribute('data-theme', 'dark');
+localStorage.setItem('theme', 'dark');
+} else {
+html.setAttribute('data-theme', 'light');
+localStorage.setItem('theme', 'light');
+}
+});
+
+// 监听系统主题变化
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+if (!localStorage.getItem('theme')) {
+if (e.matches) {
+html.setAttribute('data-theme', 'dark');
+themeToggle.checked = true;
+} else {
+html.setAttribute('data-theme', 'light');
+themeToggle.checked = false;
+}
+}
+});
+
+// 音乐播放器功能
+const audioPlayer = document.getElementById('audioPlayer');
+const playBtn = document.getElementById('playBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const progressBar = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
+const currentTimeSpan = document.getElementById('currentTime');
+const totalTimeSpan = document.getElementById('totalTime');
+const volumeSlider = document.getElementById('volumeSlider');
+const volumeFill = document.getElementById('volumeFill');
+const togglePlayer = document.getElementById('togglePlayer');
+const musicPlayer = document.getElementById('musicPlayer');
+
+let isPlaying = false;
+let currentVolume = 0.7;
+
+// 设置初始音量
+audioPlayer.volume = currentVolume;
+
+// 播放/暂停功能
+playBtn.addEventListener('click', function () {
+if (isPlaying) {
+audioPlayer.pause();
+playBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"></polygon></svg>';
+musicPlayer.classList.add('paused');
+} else {
+audioPlayer.play();
+playBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+musicPlayer.classList.remove('paused');
+}
+isPlaying = !isPlaying;
+});
+
+// 音频加载完成
+audioPlayer.addEventListener('loadedmetadata', function () {
+totalTimeSpan.textContent = formatTime(audioPlayer.duration);
+});
+
+// 更新进度条
+audioPlayer.addEventListener('timeupdate', function () {
+const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+progressFill.style.width = progress + '%';
+currentTimeSpan.textContent = formatTime(audioPlayer.currentTime);
+});
+
+// 点击进度条跳转
+progressBar.addEventListener('click', function (e) {
+const rect = progressBar.getBoundingClientRect();
+const clickX = e.clientX - rect.left;
+const width = rect.width;
+const clickTime = (clickX / width) * audioPlayer.duration;
+audioPlayer.currentTime = clickTime;
+});
+
+// 音量控制
+volumeSlider.addEventListener('click', function (e) {
+const rect = volumeSlider.getBoundingClientRect();
+const clickX = e.clientX - rect.left;
+const width = rect.width;
+currentVolume = clickX / width;
+audioPlayer.volume = currentVolume;
+volumeFill.style.width = (currentVolume * 100) + '%';
+});
+
+// 播放器折叠/展开
+togglePlayer.addEventListener('click', function () {
+musicPlayer.classList.toggle('collapsed');
+if (musicPlayer.classList.contains('collapsed')) {
+togglePlayer.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>';
+} else {
+togglePlayer.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18,6 6,6"></polyline><polyline points="18,12 6,12"></polyline><polyline points="18,18 6,18"></polyline></svg>';
+}
+});
+
+// 格式化时间
+function formatTime(seconds) {
+if (isNaN(seconds)) return '0:00';
+const minutes = Math.floor(seconds / 60);
+const remainingSeconds = Math.floor(seconds % 60);
+return minutes + ':' + (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+}
+
+// 音频结束时重置播放按钮
+audioPlayer.addEventListener('ended', function () {
+isPlaying = false;
+playBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"></polygon></svg>';
+musicPlayer.classList.add('paused');
+progressFill.style.width = '0%';
+currentTimeSpan.textContent = '0:00';
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96b483c748010516',t:'MTc1NDU0NjAxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"96b483c748010516","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.7.0","token":"33687291d8f84c4981a09b67f7040e15"}' crossorigin="anonymous"></script>
+</body>
+
+</htmlB
